@@ -24,11 +24,6 @@ class TypeSpeedTester {
         this.loadHistory();
         this.applySettings();
         this.loadInitialRandomText(); // Load random text on startup
-        
-        // Auto-focus the typing input for immediate Enter key interaction
-        setTimeout(() => {
-            this.typingInput.focus();
-        }, 100);
     }
 
     initializeElements() {
@@ -130,28 +125,7 @@ class TypeSpeedTester {
                 this.closeModal('results');
                 this.closeModal('settings');
             }
-            
-            // Global Enter key to start test when not active (works anywhere on page)
-            if (e.key === 'Enter' && !this.isTestActive) {
-                e.preventDefault();
-                this.startTest();
-                return;
-            }
-            
-            // Tab + Enter for restart
-            if (e.key === 'Tab' && !this.isTestActive) {
-                e.preventDefault();
-                this.waitingForRestart = true;
-                setTimeout(() => this.waitingForRestart = false, 1000);
-                return;
-            }
-            
-            if (e.key === 'Enter' && this.waitingForRestart && !this.isTestActive) {
-                e.preventDefault();
-                this.resetTest();
-                this.waitingForRestart = false;
-                return;
-            }
+            // Remove the old Ctrl+Enter shortcut since we'll handle Enter directly
         });
         
         // Click outside modal to close
@@ -213,11 +187,6 @@ class TypeSpeedTester {
         
         // Mark as not user-selected since this was automatic
         this.userSelectedText = false;
-        
-        // Focus the typing input so Enter key works immediately
-        setTimeout(() => {
-            this.typingInput.focus();
-        }, 100);
     }
 
     generateText(difficulty, category) {
@@ -950,29 +919,6 @@ class TypeSpeedTester {
     }
 
     handleKeyDown(e) {
-        // Handle keyboard shortcuts when test is not active
-        if (!this.isTestActive) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.startTest();
-                return;
-            }
-            
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                this.waitingForRestart = true;
-                setTimeout(() => this.waitingForRestart = false, 1000);
-                return;
-            }
-            
-            if (e.key === 'Enter' && this.waitingForRestart) {
-                e.preventDefault();
-                this.resetTest();
-                this.waitingForRestart = false;
-                return;
-            }
-        }
-        
         // Handle contenteditable specific behavior during active test
         if (this.isTestActive) {
             // Prevent Enter key to avoid line breaks
@@ -985,9 +931,32 @@ class TypeSpeedTester {
                 e.preventDefault();
                 return;
             }
+            // Allow backspace and all other keys for normal typing
+            return;
         }
         
-        // Handle other shortcuts
+        // Handle keyboard shortcuts only when test is not active
+        if (e.key === 'Enter' && !this.isTestActive) {
+            e.preventDefault();
+            this.startTest();
+            return;
+        }
+        
+        if (e.key === 'Tab' && !this.isTestActive) {
+            e.preventDefault();
+            // Check if next key is Enter for restart shortcut
+            this.waitingForRestart = true;
+            setTimeout(() => this.waitingForRestart = false, 1000); // Reset after 1 second
+            return;
+        }
+        
+        if (e.key === 'Enter' && this.waitingForRestart && !this.isTestActive) {
+            e.preventDefault();
+            this.resetTest();
+            this.waitingForRestart = false;
+            return;
+        }
+        
         if (e.ctrlKey) {
             if (e.key === 'r') {
                 e.preventDefault();
