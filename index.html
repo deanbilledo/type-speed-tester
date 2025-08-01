@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1">
@@ -105,27 +105,29 @@
             <!-- Typing Area -->
             <div class="typing-container">
                 <div class="text-display" id="textDisplay">
-                    <p id="textContent">Click "Start Test" to begin your typing challenge!</p>
+                    <p id="textContent">Press Enter to start your typing challenge!</p>
                 </div>
                 <div class="input-area">
                     <div 
                         id="typingInput" 
-                        contenteditable="false"
+                        contenteditable="true"
                         class="typing-input"
-                        data-placeholder="Click 'Start Test' to begin typing..."
+                        data-placeholder="Focus here and press Enter to begin..."
                         spellcheck="false"
                         autocomplete="off"
                         autocapitalize="off"
                         autocorrect="off"
                     ></div>
                 </div>
+                <div class="typing-tooltip">
+                    <span class="tooltip-text">Press <kbd>Enter</kbd> to start • <kbd>Tab</kbd> + <kbd>Enter</kbd> to restart</span>
+                </div>
             </div>
 
-            <!-- Control Buttons -->
-            <div class="controls">
-                <button class="btn btn-primary" id="startBtn">Start Test</button>
-                <button class="btn btn-secondary" id="resetBtn" style="display: none;">Reset</button>
-                <button class="btn btn-secondary" id="newTextBtn" style="display: none;">New Text</button>
+            <!-- Control Buttons - Hidden by default -->
+            <div class="controls" style="display: none;">
+                <button class="btn btn-secondary" id="resetBtn">Reset</button>
+                <button class="btn btn-secondary" id="newTextBtn">New Text</button>
             </div>
 
             <!-- Results Modal -->

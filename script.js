@@ -17,6 +17,7 @@ class TypeSpeedTester {
         this.settings = this.loadSettings();
         this.userSelectedText = false; // Track if user manually selected text
         this.isInitialLoad = true; // Track if this is the initial page load
+        this.waitingForRestart = false; // Track Tab+Enter restart sequence
         
         this.initializeElements();
         this.bindEvents();
@@ -45,7 +46,6 @@ class TypeSpeedTester {
         this.typingContainer = document.querySelector('.typing-container');
         
         // Control elements
-        this.startBtn = document.getElementById('startBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.newTextBtn = document.getElementById('newTextBtn');
         
@@ -65,7 +65,6 @@ class TypeSpeedTester {
 
     bindEvents() {
         // Control buttons
-        this.startBtn.addEventListener('click', () => this.startTest());
         this.resetBtn.addEventListener('click', () => this.resetTest());
         this.newTextBtn.addEventListener('click', () => {
             // Reset user selection flag so we get random text
@@ -129,9 +128,7 @@ class TypeSpeedTester {
                 this.closeModal('results');
                 this.closeModal('settings');
             }
-            if (e.ctrlKey && e.key === 'Enter' && !this.isTestActive) {
-                this.startTest();
-            }
+            // Remove the old Ctrl+Enter shortcut since we'll handle Enter directly
         });
         
         // Click outside modal to close
@@ -688,7 +685,9 @@ class TypeSpeedTester {
         this.typingInput.focus();
         this.typingInput.textContent = '';
         
-        this.startBtn.style.display = 'none';
+        // Show controls and hide tooltip
+        document.querySelector('.controls').style.display = 'flex';
+        document.querySelector('.typing-tooltip').style.display = 'none';
         this.resetBtn.style.display = 'inline-flex';
         this.newTextBtn.style.display = 'inline-flex';
         
@@ -699,12 +698,14 @@ class TypeSpeedTester {
 
     resetTest() {
         this.isTestActive = false;
-        this.typingInput.contentEditable = 'false';
+        this.typingInput.contentEditable = 'true'; // Keep editable for Enter to start
         this.typingInput.textContent = '';
         this.currentIndex = 0;
         this.timeRemaining = this.duration;
         
-        this.startBtn.style.display = 'inline-flex';
+        // Hide controls and show tooltip
+        document.querySelector('.controls').style.display = 'none';
+        document.querySelector('.typing-tooltip').style.display = 'block';
         this.resetBtn.style.display = 'none';
         this.newTextBtn.style.display = 'none';
         
@@ -953,6 +954,27 @@ class TypeSpeedTester {
         }
         
         // Handle keyboard shortcuts only when test is not active
+        if (e.key === 'Enter' && !this.isTestActive) {
+            e.preventDefault();
+            this.startTest();
+            return;
+        }
+        
+        if (e.key === 'Tab' && !this.isTestActive) {
+            e.preventDefault();
+            // Check if next key is Enter for restart shortcut
+            this.waitingForRestart = true;
+            setTimeout(() => this.waitingForRestart = false, 1000); // Reset after 1 second
+            return;
+        }
+        
+        if (e.key === 'Enter' && this.waitingForRestart && !this.isTestActive) {
+            e.preventDefault();
+            this.resetTest();
+            this.waitingForRestart = false;
+            return;
+        }
+        
         if (e.ctrlKey) {
             if (e.key === 'r') {
                 e.preventDefault();
