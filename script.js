@@ -23,7 +23,6 @@ class TypeSpeedTester {
         this.bindEvents();
         this.loadHistory();
         this.applySettings();
-        this.loadDifficultySelection(); // Load saved difficulty before loading text
         this.loadInitialRandomText(); // Load random text on startup
         
         // Auto-focus the typing input for immediate Enter key interaction
@@ -86,13 +85,11 @@ class TypeSpeedTester {
         
         this.testDifficultySelect.addEventListener('change', () => {
             this.userSelectedText = true; // User specifically chose a difficulty
-            this.saveDifficultySelection(); // Save the difficulty preference
             this.loadNewText();
         });
         
         this.testCategorySelect.addEventListener('change', () => {
             this.userSelectedText = true; // User specifically chose a category
-            this.saveDifficultySelection(); // Save current difficulty when category changes
             this.loadNewText();
         });
         
@@ -176,8 +173,8 @@ class TypeSpeedTester {
             difficulty = selectedDifficulty;
             category = selectedCategory === 'random' ? this.getRandomCategory() : selectedCategory;
         } else {
-            // Use saved difficulty preference or default to current selection
-            difficulty = selectedDifficulty;
+            // Generate random selection or use defaults
+            difficulty = 'easy'; // Default to easy for initial load
             category = selectedCategory === 'random' ? this.getRandomCategory() : selectedCategory;
         }
         
@@ -194,30 +191,15 @@ class TypeSpeedTester {
         return categories[Math.floor(Math.random() * categories.length)];
     }
 
-    saveDifficultySelection() {
-        const selectedDifficulty = this.testDifficultySelect.value;
-        localStorage.setItem('typemaster_difficulty', selectedDifficulty);
-    }
-
-    loadDifficultySelection() {
-        const savedDifficulty = localStorage.getItem('typemaster_difficulty');
-        if (savedDifficulty) {
-            this.testDifficultySelect.value = savedDifficulty;
-            return savedDifficulty;
-        }
-        return 'easy'; // Default to easy if nothing saved
-    }
-
     loadInitialRandomText() {
-        // Load text with saved difficulty preference and random category
-        const savedDifficulty = this.loadDifficultySelection();
+        // Always load random text on initial page load with easy difficulty
         const randomCategory = this.getRandomCategory();
         
         // Set category dropdown to "random" to indicate random selection
         this.testCategorySelect.value = 'random';
         
-        // Generate and load the text with saved difficulty
-        this.currentText = this.generateText(savedDifficulty, randomCategory);
+        // Generate and load the text with easy difficulty
+        this.currentText = this.generateText('easy', randomCategory);
         this.renderText();
         
         // Don't call resetTest here as it would disable the input
