@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeMaster - Ultimate Typing Speed Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TypeMaster">
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="description" content="The ultimate typing speed test with real-time WPM tracking, accuracy measurement, and comprehensive performance analysis.">
+    <meta name="keywords" content="typing test, typing speed, WPM, words per minute, typing practice, keyboard test">
+    <meta name="author" content="TypeMaster">
+    <meta property="og:title" content="TypeMaster - Ultimate Typing Speed Test">
+    <meta property="og:description" content="Test your typing speed with real-time WPM tracking and detailed performance analysis.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://deanbilledo.github.io/type-speed-tester/">
+    <meta property="og:image" content="https://deanbilledo.github.io/type-speed-tester/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TypeMaster - Ultimate Typing Speed Test">
+    <meta name="twitter:description" content="Test your typing speed with real-time WPM tracking and detailed performance analysis.">
+    <meta name="twitter:image" content="https://deanbilledo.github.io/type-speed-tester/og-image.png">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">⌨️</span>
+                <h1>TypeMaster</h1>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+                    <span class="settings-icon">⚙️</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Test Configuration -->
+            <div class="test-config" id="testConfig">
+                <div class="config-group">
+                    <label for="testDuration">Duration</label>
+                    <select id="testDuration">
+                        <option value="15">15 seconds</option>
+                        <option value="30" selected>30 seconds</option>
+                        <option value="60">1 minute</option>
+                        <option value="120">2 minutes</option>
+                        <option value="300">5 minutes</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="testDifficulty">Difficulty</label>
+                    <select id="testDifficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="testCategory">Category</label>
+                    <select id="testCategory">
+                        <option value="quotes">Quotes</option>
+                        <option value="programming" selected>Programming</option>
+                        <option value="literature">Literature</option>
+                        <option value="science">Science</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Live Stats -->
+            <div class="stats-bar" id="statsBar">
+                <div class="stat">
+                    <span class="stat-label">WPM</span>
+                    <span class="stat-value" id="currentWpm">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">CPM</span>
+                    <span class="stat-value" id="currentCpm">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Accuracy</span>
+                    <span class="stat-value" id="currentAccuracy">100%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Time</span>
+                    <span class="stat-value" id="timeRemaining">30</span>
+                </div>
+            </div>
+
+            <!-- Typing Area -->
+            <div class="typing-container">
+                <div class="text-display" id="textDisplay">
+                    <p id="textContent">Click "Start Test" to begin your typing challenge!</p>
+                </div>
+                <div class="input-area">
+                    <textarea 
+                        id="typingInput" 
+                        placeholder="Start typing here..."
+                        disabled
+                        spellcheck="false"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        autocorrect="off"
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="controls">
+                <button class="btn btn-primary" id="startBtn">Start Test</button>
+                <button class="btn btn-secondary" id="resetBtn" style="display: none;">Reset</button>
+                <button class="btn btn-secondary" id="newTextBtn" style="display: none;">New Text</button>
+            </div>
+
+            <!-- Results Modal -->
+            <div class="modal" id="resultsModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Test Results</h2>
+                        <button class="modal-close" id="modalClose">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="results-summary">
+                            <div class="result-card">
+                                <div class="result-label">Words per Minute</div>
+                                <div class="result-value primary" id="finalWpm">0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Characters per Minute</div>
+                                <div class="result-value" id="finalCpm">0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Accuracy</div>
+                                <div class="result-value" id="finalAccuracy">0%</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Errors</div>
+                                <div class="result-value" id="finalErrors">0</div>
+                            </div>
+                        </div>
+                        <div class="results-details">
+                            <h3>Performance Analysis</h3>
+                            <div class="performance-grid">
+                                <div class="performance-item">
+                                    <span class="performance-label">Total Characters</span>
+                                    <span class="performance-value" id="totalChars">0</span>
+                                </div>
+                                <div class="performance-item">
+                                    <span class="performance-label">Correct Characters</span>
+                                    <span class="performance-value" id="correctChars">0</span>
+                                </div>
+                                <div class="performance-item">
+                                    <span class="performance-label">Test Duration</span>
+                                    <span class="performance-value" id="testDurationResult">0s</span>
+                                </div>
+                                <div class="performance-item">
+                                    <span class="performance-label">Average WPM</span>
+                                    <span class="performance-value" id="avgWpm">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="results-actions">
+                            <button class="btn btn-primary" id="retryBtn">Try Again</button>
+                            <button class="btn btn-secondary" id="shareBtn">Share Results</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Modal -->
+            <div class="modal" id="settingsModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Settings</h2>
+                        <button class="modal-close" id="settingsModalClose">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="settings-group">
+                            <h3>Appearance</h3>
+                            <div class="setting-item">
+                                <label for="fontSize">Font Size</label>
+                                <select id="fontSize">
+                                    <option value="14">Small (14px)</option>
+                                    <option value="16" selected>Medium (16px)</option>
+                                    <option value="18">Large (18px)</option>
+                                    <option value="20">Extra Large (20px)</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="fontFamily">Font Family</label>
+                                <select id="fontFamily">
+                                    <option value="inter">Inter</option>
+                                    <option value="jetbrains" selected>JetBrains Mono</option>
+                                    <option value="system">System Default</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Typing</h3>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="soundEffects" checked>
+                                    Sound Effects
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="showKeyboard">
+                                    Show Virtual Keyboard
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="highlightErrors" checked>
+                                    Highlight Errors
+                                </label>
+                            </div>
+                        </div>
+                        <div class="settings-actions">
+                            <button class="btn btn-secondary" id="resetSettings">Reset to Default</button>
+                            <button class="btn btn-primary" id="saveSettings">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress History -->
+            <div class="history-section" id="historySection">
+                <h3>Recent Tests</h3>
+                <div class="history-list" id="historyList">
+                    <div class="no-history">No test history yet. Complete a test to see your progress!</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 TypeMaster. Built with ❤️ for typing enthusiasts.</p>
+            <div class="footer-links">
+                <a href="https://github.com/deanbilledo/type-speed-tester" target="_blank">GitHub</a>
+                <span>•</span>
+                <a href="#" id="aboutLink">About</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

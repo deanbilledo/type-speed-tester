@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://deanbilledo.github.io/type-speed-tester/sitemap.xml
