@@ -63,8 +63,8 @@
                 <div class="config-group">
                     <label for="testDifficulty">Difficulty</label>
                     <select id="testDifficulty">
-                        <option value="easy">Easy</option>
-                        <option value="medium" selected>Medium</option>
+                        <option value="easy" selected>Easy</option>
+                        <option value="medium">Medium</option>
                         <option value="hard">Hard</option>
                         <option value="expert">Expert</option>
                     </select>
@@ -72,8 +72,9 @@
                 <div class="config-group">
                     <label for="testCategory">Category</label>
                     <select id="testCategory">
+                        <option value="random">Random</option>
                         <option value="quotes">Quotes</option>
-                        <option value="programming" selected>Programming</option>
+                        <option value="programming">Programming</option>
                         <option value="literature">Literature</option>
                         <option value="science">Science</option>
                         <option value="business">Business</option>
@@ -107,15 +108,16 @@
                     <p id="textContent">Click "Start Test" to begin your typing challenge!</p>
                 </div>
                 <div class="input-area">
-                    <textarea 
+                    <div 
                         id="typingInput" 
-                        placeholder="Start typing here..."
-                        disabled
+                        contenteditable="false"
+                        class="typing-input"
+                        data-placeholder="Click 'Start Test' to begin typing..."
                         spellcheck="false"
                         autocomplete="off"
                         autocapitalize="off"
                         autocorrect="off"
-                    ></textarea>
+                    ></div>
                 </div>
             </div>
 

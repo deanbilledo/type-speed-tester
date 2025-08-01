@@ -296,7 +296,7 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-.input-area textarea {
+.typing-input {
     width: 100%;
     padding: var(--spacing-xl);
     border: none;
@@ -304,19 +304,26 @@ body {
     color: var(--text-primary);
     font-family: var(--font-family-mono);
     font-size: 1.125rem;
-    resize: none;
-    min-height: 120px;
+    min-height: 60px;
     transition: background-color var(--transition-normal);
+    outline: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
-.input-area textarea:focus {
-    outline: none;
+.typing-input:focus {
     background: var(--bg-tertiary);
 }
 
-.input-area textarea:disabled {
+.typing-input[contenteditable="false"] {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.typing-input:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    pointer-events: none;
 }
 
 /* Controls */
@@ -343,6 +350,8 @@ body {
     text-decoration: none;
     min-width: 120px;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn:disabled {
@@ -700,9 +709,9 @@ body {
         min-height: 150px;
     }
     
-    .input-area textarea {
+    .typing-input {
         font-size: 1rem;
-        min-height: 100px;
+        min-height: 50px;
         padding: var(--spacing-lg);
     }
     
