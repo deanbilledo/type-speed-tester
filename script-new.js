@@ -253,40 +253,72 @@ class TypeSpeedTester {
             return;
         }
         
+        // Wrap words in spans to prevent splitting
+        const words = this.currentText.split(' ');
         let html = '';
-        
-        for (let i = 0; i < this.currentText.length; i++) {
-            const char = this.currentText[i];
-            let className = '';
-            
-            if (i < this.currentIndex) {
-                // Already typed
-                const typedChar = this.typedChars[i];
-                className = typedChar === char ? 'correct' : 'incorrect';
-            } else if (i === this.currentIndex) {
-                // Current character
-                className = 'current';
+        let charIndex = 0;
+
+        words.forEach((word, wordIndex) => {
+            html += '<span class="word">';
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                let className = '';
+                if (charIndex < this.currentIndex) {
+                    const typedChar = this.typedChars[charIndex];
+                    className = typedChar === char ? 'correct' : 'incorrect';
+                } else if (charIndex === this.currentIndex) {
+                    className = 'current';
+                }
+                html += `<span class="char ${className}">${char}</span>`;
+                charIndex++;
             }
-            
-            html += `<span class="char ${className}">${char === ' ' ? '&nbsp;' : char}</span>`;
-        }
+            html += '</span>';
+
+            // Add space after word, unless it's the last one
+            if (wordIndex < words.length - 1) {
+                let spaceClassName = 'space';
+                if (charIndex < this.currentIndex) {
+                    const typedChar = this.typedChars[charIndex];
+                    spaceClassName += typedChar === ' ' ? ' correct' : ' incorrect';
+                } else if (charIndex === this.currentIndex) {
+                    spaceClassName += ' current';
+                }
+                html += `<span class="char ${spaceClassName}"> </span>`;
+                charIndex++;
+            }
+        });
         
         this.textContent.innerHTML = html;
     }
     
     updateCharacterStates() {
         const chars = this.textContent.querySelectorAll('.char');
-        chars.forEach((char, i) => {
-            char.className = 'char';
-            
-            if (i < this.currentIndex) {
-                const typedChar = this.typedChars[i];
-                const expectedChar = this.currentText[i];
-                char.classList.add(typedChar === expectedChar ? 'correct' : 'incorrect');
-            } else if (i === this.currentIndex) {
-                char.classList.add('current');
+        let textIndex = 0;
+        for (let i = 0; i < chars.length; i++) {
+            const charSpan = chars[i];
+            // Skip space spans for indexing, but style them
+            if (charSpan.classList.contains('space')) {
+                charSpan.className = 'char space';
+                if (textIndex < this.currentIndex) {
+                    const typedChar = this.typedChars[textIndex];
+                    charSpan.classList.add(typedChar === ' ' ? 'correct' : 'incorrect');
+                } else if (textIndex === this.currentIndex) {
+                    charSpan.classList.add('current');
+                }
+                textIndex++;
+                continue;
             }
-        });
+
+            charSpan.className = 'char';
+            if (textIndex < this.currentIndex) {
+                const typedChar = this.typedChars[textIndex];
+                const expectedChar = this.currentText[textIndex];
+                charSpan.classList.add(typedChar === expectedChar ? 'correct' : 'incorrect');
+            } else if (textIndex === this.currentIndex) {
+                charSpan.classList.add('current');
+            }
+            textIndex++;
+        }
     }
 
     startTimer() {

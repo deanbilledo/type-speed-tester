@@ -227,6 +227,7 @@ body {
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
+    margin-top: var(--spacing-xl);
     margin-bottom: var(--spacing-md);
     max-width: 800px;
     margin-left: auto;
@@ -271,10 +272,11 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--spacing-md);
     padding: var(--spacing-md);
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    color: var(--text-inverse);
-    box-shadow: var(--shadow-lg);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
     margin-bottom: var(--spacing-md);
     opacity: 0;
     transform: translateY(-20px);
@@ -1118,4 +1120,14 @@ input:focus + .slider {
 input:checked + .slider:before {
     transform: translateX(22px);
     background-color: var(--text-inverse);
+}
+
+/* Word wrapping styles */
+.word {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.char.space {
+    white-space: normal;
 }
