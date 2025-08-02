@@ -26,6 +26,14 @@
             <!-- Test Configuration -->
             <div class="test-config" id="testConfig">
                 <div class="config-group">
+                    <label for="testDuration">Time</label>
+                    <select id="testDuration">
+                        <option value="15">15s</option>
+                        <option value="30" selected>30s</option>
+                        <option value="60">60s</option>
+                    </select>
+                </div>
+                <div class="config-group">
                     <label for="testDifficulty">Difficulty</label>
                     <select id="testDifficulty">
                         <option value="easy" selected>Easy</option>
@@ -44,6 +52,20 @@
                         <option value="science">Science</option>
                         <option value="business">Business</option>
                     </select>
+                </div>
+                <div class="config-group">
+                    <label for="includePunctuation">Punctuation</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="includePunctuation" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="config-group">
+                    <label for="includeNumbers">Numbers</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="includeNumbers">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
 

@@ -13,6 +13,15 @@ class TypeSpeedTester {
         this.tabPressed = false;
         this.typedChars = []; // Track what was actually typed
         
+        // Settings with defaults
+        this.settings = {
+            time: 30,
+            difficulty: 'easy',
+            category: 'random',
+            punctuation: true,
+            numbers: false
+        };
+
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
@@ -30,8 +39,14 @@ class TypeSpeedTester {
         this.textDisplay = document.getElementById('textDisplay');
         this.textContent = document.getElementById('textContent');
         this.typingInput = document.getElementById('typingInput');
+        
+        // Settings elements
+        this.durationSelect = document.getElementById('testDuration');
         this.difficultySelect = document.getElementById('testDifficulty');
         this.categorySelect = document.getElementById('testCategory');
+        this.punctuationToggle = document.getElementById('includePunctuation');
+        this.numbersToggle = document.getElementById('includeNumbers');
+        
         this.statsBar = document.getElementById('statsBar');
         this.results = document.getElementById('results');
         this.tooltip = document.getElementById('tooltip');
@@ -127,15 +142,11 @@ class TypeSpeedTester {
         });
 
         // Configuration changes
-        this.difficultySelect.addEventListener('change', () => {
-            this.saveSettings();
-            this.loadText();
-        });
-
-        this.categorySelect.addEventListener('change', () => {
-            this.saveSettings();
-            this.loadText();
-        });
+        this.durationSelect.addEventListener('change', this.handleSettingsChange.bind(this));
+        this.difficultySelect.addEventListener('change', this.handleSettingsChange.bind(this));
+        this.categorySelect.addEventListener('change', this.handleSettingsChange.bind(this));
+        this.punctuationToggle.addEventListener('change', this.handleSettingsChange.bind(this));
+        this.numbersToggle.addEventListener('change', this.handleSettingsChange.bind(this));
         
         // Focus text display when clicked
         this.textDisplay.addEventListener('click', () => {
@@ -148,6 +159,19 @@ class TypeSpeedTester {
         });
     }
 
+    handleSettingsChange() {
+        this.settings.time = parseInt(this.durationSelect.value, 10);
+        this.settings.difficulty = this.difficultySelect.value;
+        this.settings.category = this.categorySelect.value;
+        this.settings.punctuation = this.punctuationToggle.checked;
+        this.settings.numbers = this.numbersToggle.checked;
+        
+        this.timeRemainingElement.textContent = this.settings.time;
+        
+        this.saveSettings();
+        this.loadText();
+    }
+
     startTest() {
         if (this.isTestActive) return;
         
@@ -157,7 +181,7 @@ class TypeSpeedTester {
         this.errors = 0;
         this.correctChars = 0;
         this.totalKeystrokes = 0;
-        this.timeRemaining = 30;
+        this.timeRemaining = this.settings.time;
         
         this.textDisplay.contentEditable = true;
         this.textDisplay.focus();
@@ -319,7 +343,7 @@ class TypeSpeedTester {
         this.errors = 0;
         this.correctChars = 0;
         this.totalKeystrokes = 0;
-        this.timeRemaining = 30;
+        this.timeRemaining = this.settings.time;
         this.startTime = null;
         this.typedChars = [];
         
@@ -329,7 +353,7 @@ class TypeSpeedTester {
         this.statsBar.style.display = 'none';
         this.results.classList.remove('visible');
         this.results.classList.add('hidden');
-        this.timeRemainingElement.textContent = '30';
+        this.timeRemainingElement.textContent = this.settings.time;
         this.tooltip.classList.remove('hidden');
         
         document.querySelector('.typing-container').classList.remove('active');
@@ -338,14 +362,32 @@ class TypeSpeedTester {
     }
 
     loadText() {
-        const difficulty = this.difficultySelect.value;
-        const category = this.categorySelect.value;
+        const difficulty = this.settings.difficulty;
+        let category = this.settings.category;
         
         const texts = this.getTexts();
+        
+        // Handle random category selection
+        if (category === 'random') {
+            const availableCategories = Object.keys(texts);
+            category = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+        }
+        
         const categoryTexts = texts[category] || texts.quotes;
         const difficultyTexts = categoryTexts[difficulty] || categoryTexts.easy;
         
-        this.currentText = difficultyTexts[Math.floor(Math.random() * difficultyTexts.length)];
+        let selectedText = difficultyTexts[Math.floor(Math.random() * difficultyTexts.length)];
+        
+        // Apply text filtering based on settings
+        if (!this.settings.punctuation) {
+            selectedText = selectedText.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+        }
+        if (!this.settings.numbers) {
+            selectedText = selectedText.replace(/[0-9]/g, '');
+        }
+        
+        // Clean up extra spaces
+        this.currentText = selectedText.replace(/\s+/g, ' ').trim();
         
         if (this.textContent) {
             this.renderText();
@@ -825,24 +867,24 @@ class TypeSpeedTester {
     }
 
     saveSettings() {
-        const settings = {
-            difficulty: this.difficultySelect.value,
-            category: this.categorySelect.value
-        };
-        localStorage.setItem('typingTestSettings', JSON.stringify(settings));
+        localStorage.setItem('typingTestSettings', JSON.stringify(this.settings));
     }
 
     loadSettings() {
         const saved = localStorage.getItem('typingTestSettings');
         if (saved) {
-            const settings = JSON.parse(saved);
-            this.difficultySelect.value = settings.difficulty || 'easy';
-            this.categorySelect.value = settings.category || 'random';
-        } else {
-            // Set defaults
-            this.difficultySelect.value = 'easy';
-            this.categorySelect.value = 'random';
+            const savedSettings = JSON.parse(saved);
+            this.settings = { ...this.settings, ...savedSettings };
         }
+        
+        // Update UI elements to reflect loaded settings
+        if (this.durationSelect) this.durationSelect.value = this.settings.time;
+        if (this.difficultySelect) this.difficultySelect.value = this.settings.difficulty;
+        if (this.categorySelect) this.categorySelect.value = this.settings.category;
+        if (this.punctuationToggle) this.punctuationToggle.checked = this.settings.punctuation;
+        if (this.numbersToggle) this.numbersToggle.checked = this.settings.numbers;
+        
+        if (this.timeRemainingElement) this.timeRemainingElement.textContent = this.settings.time;
     }
 }
 
